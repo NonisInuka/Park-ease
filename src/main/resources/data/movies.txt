@@ -1,0 +1,8 @@
+# movies.txt – CineReserve seed data
+# Format: id|title|genre|duration|rating|emoji|color
+1|Nexus Protocol|Sci-Fi|132|8.7|🚀|#1a2a4a
+2|Crimson Verdict|Thriller|118|7.9|🔪|#2a1a1a
+3|Monsoon Love|Drama|145|8.1|🌧️|#1a2a2a
+4|Blast Radius|Action|128|7.5|💥|#2a1f1a
+5|The Algorithm|Thriller|112|8.3|🤖|#1f1a2a
+6|Laughing Stock|Comedy|98|7.2|😂|#1a2a1a

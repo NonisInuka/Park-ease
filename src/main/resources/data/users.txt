@@ -1,0 +1,5 @@
+# users.txt – CineReserve seed data
+# Format: id,firstName,lastName,email,password,role,joinedDate
+1,Admin,User,admin@cine.lk,admin123,admin,2025-01-10
+2,Ayesha,Perera,ayesha@gmail.com,pass123,customer,2025-03-22
+3,Kamal,Silva,kamal@gmail.com,pass123,customer,2025-05-01
