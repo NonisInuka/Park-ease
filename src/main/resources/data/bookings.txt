@@ -1,2 +1,0 @@
-# bookings.txt – CineReserve bookings
-# Format: id|userId|userName|movieId|movieTitle|showtimeId|date|time|hall|seats|total|status|bookedAt
