@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>Support Tickets</title></head>
+<body>
+<main>
+    <div class="page-header">
+        <h3>Support Tickets</h3>
+    </div>
+
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+    <div th:if="${tickets == null or tickets.isEmpty()}" class="empty-state">
+        <div class="empty-state-icon">&#128172;</div>
+        <p>No support requests yet.</p>
+    </div>
+
+    <div class="feedback-grid">
+        <article th:each="t : ${tickets}" class="feedback-card">
+            <div class="fb-header">
+                <h4 class="fb-author" th:text="${t.userName}"></h4>
+                <span class="badge"
+                      th:classappend="${t.status == 'RESOLVED'} ? 'badge-success' : (${t.status == 'OPEN'} ? 'badge-warning' : 'badge-neutral')"
+                      th:text="${t.status}"></span>
+            </div>
+            <p class="fb-meta">
+                <strong th:text="${t.subject}"></strong>
+                <span class="text-muted" th:text="' &bull; ' + ${t.createdDate}"></span>
+            </p>
+            <p class="fb-message" th:text="${t.message}"></p>
+            <div th:if="${t.adminResponse != null and !t.adminResponse.isEmpty()}" class="fb-response">
+                <strong class="text-xs text-muted">Admin Response:</strong>
+                <p th:text="${t.adminResponse}" class="text-sm"></p>
+            </div>
+            <div class="fb-actions">
+                <a th:if="${t.status == 'OPEN'}" th:href="@{/admin/support/resolve/{id}(id=${t.ticketId})}" class="btn btn-primary btn-xs">Resolve</a>
+                <form th:action="@{/admin/support/delete/{id}(id=${t.ticketId})}" method="post" class="delete-form">
+                    <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+                </form>
+            </div>
+        </article>
+    </div>
+</main>
+</body>
+</html>

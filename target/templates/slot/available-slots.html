@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>Available Slots</title></head>
+<body><main>
+    <div class="page-header"><div><h3>Available Slots</h3><p>Browse currently open parking spaces and continue to booking</p></div></div>
+    <div class="card filter-card">
+        <div class="card-body">
+            <form method="get" th:action="@{/user/slots}" class="search-filter-form" id="slot-filter-form">
+                <div class="form-group"><label class="form-label">Search</label><input class="form-input" name="q" th:value="${q}" placeholder="Slot, floor, facility or zone" /></div>
+                <div class="form-group"><label class="form-label">Facility</label><select class="form-select facility-filter" name="facilityId"><option value="">All Facilities</option><option th:each="f : ${facilities}" th:value="${f.facilityId}" th:text="${f.name}" th:selected="${f.facilityId == facilityFilter}"></option></select></div>
+                <div class="form-group"><label class="form-label">Zone</label><select class="form-select zone-filter" name="zoneId"><option value="">All Zones</option><option th:each="z : ${zones}" th:value="${z.zoneId}" th:text="${z.name + ' (' + z.floor + ')'}" th:attr="data-facility=${z.facilityId}" th:selected="${z.zoneId == zoneFilter}"></option></select></div>
+                <div class="form-group"><label class="form-label">Vehicle Type</label><select class="form-select" name="type"><option value="">All Types</option><option th:each="entry : ${vehicleCategories}" th:value="${entry.key}" th:text="${entry.value}" th:selected="${entry.key == typeFilter}"></option></select></div>
+                <div class="form-group"><label class="form-label">Category</label><select class="form-select" name="spaceCategory"><option value="">All Categories</option><option value="STANDARD" th:selected="${spaceCategoryFilter == 'STANDARD'}">Standard</option><option value="ACCESSIBLE" th:selected="${spaceCategoryFilter == 'ACCESSIBLE'}">Accessible</option><option value="PREMIUM" th:selected="${spaceCategoryFilter == 'PREMIUM'}">Premium</option></select></div>
+                <div class="form-group"><label class="form-label">Max Rate (LKR/hr)</label><input class="form-input" type="number" min="0" step="1" name="maxRate" th:value="${maxRateFilter}" placeholder="Any" /></div>
+                <div class="filter-actions"><button class="btn btn-primary" type="submit">Search</button><a th:href="@{/user/slots}" class="btn btn-secondary">Clear</a></div>
+            </form>
+        </div>
+    </div>
+
+    <div th:if="${slots.isEmpty()}" class="empty-state"><div class="empty-state-icon">&#x1F3C1;</div><p>No available slots at the moment.</p></div>
+    <div th:if="${!slots.isEmpty()}">
+        <section th:each="floorEntry : ${slotsByArea}" class="slot-floor">
+            <header class="slot-floor-header"><h4 th:text="${floorEntry.key}">Floor</h4><span class="floor-count" th:text="${#lists.size(floorEntry.value)} + ' open'">0 open</span></header>
+            <div class="slot-floor-body">
+                <div class="drive-aisle"><div class="drive-aisle-line"></div><span class="drive-aisle-label">Drive Aisle</span><div class="drive-aisle-line"></div></div>
+                <div class="slot-bay-grid">
+                    <div th:each="slot : ${floorEntry.value}" class="slot-bay-card status-available">
+                        <p class="bay-number" th:text="${slot.slotNumber}">A-01</p>
+                        <p class="bay-type" th:text="${vehicleCategoryLabels[slot.type] != null ? vehicleCategoryLabels[slot.type] : slot.type} + ' • ' + ${slot.spaceCategory}">CAR • STANDARD</p>
+                        <p class="cell-muted" style="font-size:12px;margin-top:4px" th:text="${facilityNames[slot.facilityId]} + ' / ' + ${zoneNames[slot.zoneId]}">Facility / Zone</p>
+                        <p class="bay-rate" th:text="'LKR ' + ${slot.ratePerHour} + '/hr'">LKR 120/hr</p>
+                        <div class="bay-actions"><a th:href="@{/user/reservations/book(slotId=${slot.slotId})}" class="btn btn-primary" style="width:100%;justify-content:center;padding:8px 0;font-size:13px;font-weight:700;">Book Now</a></div>
+                    </div>
+                </div>
+                <div class="structure-wall"><div class="structure-wall-line"></div><span class="structure-wall-label">Structure / Wall</span><div class="structure-wall-line"></div></div>
+            </div>
+        </section>
+    </div>
+
+<script>
+(function () {
+    var facility = document.querySelector('.facility-filter');
+    var zone = document.querySelector('.zone-filter');
+    if (!facility || !zone) return;
+    var options = Array.from(zone.querySelectorAll('option[data-facility]'));
+    function filterZones() {
+        var selectedFacility = facility.value;
+        var selectedZone = zone.value;
+        var selectedStillVisible = !selectedZone;
+        options.forEach(function (option) {
+            var show = !selectedFacility || option.dataset.facility === selectedFacility;
+            option.hidden = !show;
+            option.disabled = !show;
+            if (show && option.value === selectedZone) selectedStillVisible = true;
+        });
+        if (!selectedStillVisible) zone.value = '';
+    }
+    facility.addEventListener('change', filterZones);
+    filterZones();
+})();
+</script>
+</main></body></html>

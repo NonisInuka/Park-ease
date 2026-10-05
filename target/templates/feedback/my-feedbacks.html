@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>My Feedback</title></head>
+<body>
+<main>
+    <div class="page-header">
+        <h3>My Feedback</h3>
+        <a th:href="@{/user/feedbacks/submit}" class="btn btn-primary">Submit Feedback</a>
+    </div>
+
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+    <div th:if="${feedbacks == null or feedbacks.isEmpty()}" class="empty-state">
+        <div class="empty-state-icon">&#128172;</div>
+        <p>You haven't submitted any feedback yet.</p>
+        <a th:href="@{/user/feedbacks/submit}" class="btn btn-primary">Submit Your First Feedback</a>
+    </div>
+
+    <div class="feedback-grid">
+        <article th:each="fb : ${feedbacks}" class="feedback-card">
+            <div class="fb-header">
+                <span class="badge badge-info" th:text="${fb.type}"></span>
+                <span class="badge"
+                      th:classappend="${fb.status == 'RESOLVED'} ? 'badge-success' : (${fb.status == 'PENDING'} ? 'badge-warning' : 'badge-neutral')"
+                      th:text="${fb.status}"></span>
+            </div>
+            <p class="fb-meta text-xs text-muted" th:text="${fb.createdDate}"></p>
+            <p class="fb-message" th:text="${fb.message}"></p>
+            <p class="fb-rating">
+                <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                    <span th:text="${i <= fb.rating} ? '★' : '☆'"
+                          th:style="${i <= fb.rating} ? 'color:#f59e0b;' : 'color:#cbd5e1;'"></span>
+                </th:block>
+            </p>
+            <div th:if="${fb.adminResponse != null and !fb.adminResponse.isEmpty()}" class="fb-response">
+                <strong class="text-xs text-muted">Admin Response:</strong>
+                <p th:text="${fb.adminResponse}" class="text-sm"></p>
+            </div>
+            <div class="fb-actions">
+                <a th:if="${fb.status == 'PENDING'}" th:href="@{/user/feedbacks/edit/{id}(id=${fb.feedbackId})}" class="btn btn-ghost btn-xs">Edit</a>
+            </div>
+        </article>
+    </div>
+</main>
+</body>
+</html>

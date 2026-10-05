@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>Financial Management</title></head>
+<body><main>
+    <div class="page-header"><h3>Billing &amp; Payments</h3></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div class="flex gap-2 mb-4"><a th:href="@{/admin/refunds}" class="btn btn-secondary btn-sm">Refund Requests</a></div>
+
+    <div th:if="${bills == null or bills.isEmpty()}" class="empty-state"><div class="empty-state-icon">&#128196;</div><p>No bills found.</p></div>
+    <div class="table-wrapper" th:if="${bills != null and !bills.isEmpty()}">
+        <table class="table"><thead><tr><th>Bill ID</th><th>Reservation</th><th>User</th><th>Hours</th><th>Amount</th><th>Status</th><th>Payment Ref</th><th class="text-right">Actions</th></tr></thead>
+        <tbody><tr th:each="bill : ${bills}">
+            <td class="cell-mono" th:text="${bill.billId}"></td>
+            <td class="cell-mono" th:text="'#' + ${bill.reservationId}"></td>
+            <td th:text="${bill.userId}"></td>
+            <td th:text="${bill.durationHours}"></td>
+            <td class="font-bold" th:text="'LKR ' + ${#numbers.formatDecimal(bill.finalAmount,0,'COMMA',2,'POINT')}"></td>
+            <td><span class="badge" th:classappend="${bill.status == 'PAID'} ? 'badge-success' : (${bill.status == 'UNPAID'} ? 'badge-warning' : (${bill.status == 'REFUNDED'} ? 'badge-info' : 'badge-neutral'))" th:text="${bill.status}"></span></td>
+            <td class="cell-mono" th:text="${bill.paymentReference != null ? bill.paymentReference : '-'}"></td>
+            <td class="text-right"><div class="flex justify-end gap-2">
+                <a th:if="${bill.status == 'UNPAID'}" th:href="@{/admin/bills/discount/{id}(id=${bill.billId})}" class="btn btn-ghost btn-xs">Discount</a>
+                <form th:if="${bill.status == 'UNPAID'}" th:action="@{/admin/bills/void/{id}(id=${bill.billId})}" method="post" class="flex gap-2">
+                    <input type="text" name="reason" required minlength="5" maxlength="500" class="form-input" placeholder="Reason for void" style="max-width:180px"/>
+                    <button type="submit" class="btn btn-danger btn-xs">Void</button>
+                </form>
+            </div></td>
+        </tr></tbody></table>
+    </div>
+</main></body></html>

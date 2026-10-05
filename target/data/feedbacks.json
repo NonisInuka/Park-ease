@@ -1,0 +1,24 @@
+[
+  {
+    "feedbackId": "F001",
+    "userId": "U001",
+    "userName": "Kamal Perera",
+    "type": "FEEDBACK",
+    "message": "Great parking experience and easy booking flow.",
+    "rating": 5,
+    "status": "PENDING",
+    "adminResponse": "",
+    "createdDate": "2026-05-02"
+  },
+  {
+    "feedbackId": "F002",
+    "userId": "U002",
+    "userName": "Nimali Silva",
+    "type": "COMPLAINT",
+    "message": "Level 2 lighting was dim near slot C-04.",
+    "rating": 2,
+    "status": "RESOLVED",
+    "adminResponse": "Thanks for reporting. Lighting has been fixed.",
+    "createdDate": "2026-05-01"
+  }
+]
