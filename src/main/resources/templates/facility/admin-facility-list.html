@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>Parking Facilities</title></head>
+<body>
+<main>
+    <div class="page-header">
+        <div>
+            <h3>Parking Facilities</h3>
+            <p>Manage facility locations and operating status</p>
+        </div>
+        <div class="flex items-center gap-4">
+            <a th:href="@{/admin/zones}" class="btn btn-secondary">Manage Zones</a>
+            <a th:href="@{/admin/facilities/add}" class="btn btn-primary">Add Facility</a>
+        </div>
+    </div>
+
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+    <div th:if="${facilities.isEmpty()}" class="empty-state">
+        <div class="empty-state-icon">&#x1F3E2;</div>
+        <p>No parking facilities have been created yet.</p>
+        <a th:href="@{/admin/facilities/add}" class="btn btn-primary">Create Facility</a>
+    </div>
+
+    <div th:if="${!facilities.isEmpty()}" class="card">
+        <div class="card-body no-padding table-wrapper">
+            <table class="table">
+                <thead><tr><th>Name</th><th>Address</th><th>Status</th><th>Description</th><th class="text-right">Actions</th></tr></thead>
+                <tbody>
+                <tr th:each="facility : ${facilities}">
+                    <td><strong th:text="${facility.name}">Facility</strong></td>
+                    <td th:text="${facility.address}">Address</td>
+                    <td><span class="badge" th:classappend="${facility.status == 'ACTIVE'} ? 'badge-success' : 'badge-neutral'" th:text="${facility.status}">ACTIVE</span></td>
+                    <td class="cell-muted" th:text="${facility.description != null and !#strings.isEmpty(facility.description) ? facility.description : '-'}">-</td>
+                    <td class="text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <a th:href="@{/admin/facilities/edit/{id}(id=${facility.facilityId})}" class="btn btn-primary btn-sm">Edit</a>
+                            <form th:action="@{/admin/facilities/delete/{id}(id=${facility.facilityId})}" method="post" class="delete-form">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,81 @@
+[ {
+  "userId" : "A001",
+  "name" : "System Admin",
+  "email" : "admin@carpark.com",
+  "password" : "admin123",
+  "phone" : "0771000000",
+  "role" : "ADMIN",
+  "adminCode" : "ADM-001"
+}, {
+  "userId" : "U001",
+  "name" : "Kamal Perera",
+  "email" : "kamal@carpark.com",
+  "password" : "user123",
+  "phone" : "0772000001",
+  "role" : "USER",
+  "licenseNumber" : "B2345678"
+}, {
+  "userId" : "U002",
+  "name" : "Nimali Silva",
+  "email" : "nimali@carpark.com",
+  "password" : "user123",
+  "phone" : "0772000002",
+  "role" : "USER",
+  "licenseNumber" : "C9876543"
+}, {
+  "userId" : "U003",
+  "name" : "Sanjaya Kumara",
+  "email" : "sanjaya@carpark.com",
+  "password" : "user123",
+  "phone" : "0772000003",
+  "role" : "USER",
+  "licenseNumber" : "D1122334"
+}, {
+  "userId" : "U004",
+  "name" : "Priya Wijesinghe",
+  "email" : "priya@carpark.com",
+  "password" : "user123",
+  "phone" : "0772000004",
+  "role" : "USER",
+  "licenseNumber" : "E5566778"
+}, {
+  "userId" : "U005",
+  "name" : "Lakshan Jayawardene",
+  "email" : "lakshan@carpark.com",
+  "password" : "user123",
+  "phone" : "0772000005",
+  "role" : "USER",
+  "licenseNumber" : "F9988776"
+}, {
+  "userId" : "A002",
+  "name" : "Support Admin",
+  "email" : "support@carpark.com",
+  "password" : "admin123",
+  "phone" : "0771000001",
+  "role" : "ADMIN",
+  "adminCode" : "ADM-002"
+}, {
+  "userId" : "471774f3-14b8-420d-b586-cbc1216d7569",
+  "name" : "Sanjiva Weerawarana",
+  "email" : "sanjiva@wso2.com",
+  "password" : "pass123",
+  "phone" : "0822222222",
+  "role" : "USER",
+  "licenseNumber" : "CID1212"
+}, {
+  "userId" : "ecc94252-3570-4ffd-b85a-080282fbdd1d",
+  "name" : "Chamal",
+  "email" : "john@example.com",
+  "password" : "password123",
+  "phone" : "0717110160",
+  "role" : "USER",
+  "licenseNumber" : "AJBH5"
+}, {
+  "userId" : "21240290-acda-4fd7-9fcf-d65fa44de7db",
+  "name" : "Anil Samarakoon",
+  "email" : "anil@yahoo.com",
+  "password" : "anil123",
+  "phone" : "0716732001",
+  "role" : "USER",
+  "licenseNumber" : "AAB-7565"
+} ]

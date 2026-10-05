@@ -1,0 +1,24 @@
+[
+  {
+    "reservationId": "R001",
+    "userId": "U001",
+    "vehiclePlate": "CAB-1234",
+    "slotId": "S001",
+    "slotNumber": "A-01",
+    "reservationDate": "2026-05-02",
+    "startTime": "10:00",
+    "durationHours": 2,
+    "status": "ACTIVE"
+  },
+  {
+    "reservationId": "R002",
+    "userId": "U002",
+    "vehiclePlate": "BAX-7788",
+    "slotId": "S003",
+    "slotNumber": "B-11",
+    "reservationDate": "2026-05-01",
+    "startTime": "14:30",
+    "durationHours": 3,
+    "status": "COMPLETED"
+  }
+]

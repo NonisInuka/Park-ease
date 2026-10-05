@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>Resolve Feedback</title></head>
+<body>
+<main>
+    <div class="card max-w-2xl mx-auto">
+        <div class="card-header">
+            <h4>Resolve Feedback</h4>
+        </div>
+        <div class="card-body">
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+            <p class="text-sm text-muted mb-4" th:text="${feedback.message}"></p>
+            <form th:action="@{/admin/feedbacks/resolve}" method="post">
+                <input type="hidden" name="feedbackId" th:value="${feedback.feedbackId}" />
+                <div class="form-group">
+                    <label class="form-label">Admin Response</label>
+                    <textarea name="adminResponse" rows="4" required maxlength="1000" class="form-textarea" placeholder="Write your response..." th:text="${adminResponse}"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Submit Response</button>
+                    <a th:href="@{/admin/feedbacks}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>
