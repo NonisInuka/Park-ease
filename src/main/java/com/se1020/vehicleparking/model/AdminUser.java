@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("ADMIN")
+
 public class AdminUser extends User {
 
     private String adminCode;
