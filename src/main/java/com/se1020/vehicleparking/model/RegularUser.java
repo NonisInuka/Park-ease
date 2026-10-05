@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("USER")
+
 public class RegularUser extends User {
 
     private String licenseNumber;
