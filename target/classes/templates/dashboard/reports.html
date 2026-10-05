@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>Reports &amp; Analytics</title></head>
+<body>
+<main>
+    <div class="page-header">
+        <div>
+            <h3>Reports &amp; Analytics</h3>
+            <p>Generate operational and financial summaries from live SQL Server data.</p>
+        </div>
+        <a th:href="@{/admin/dashboard}" class="btn btn-secondary btn-sm">Back to Dashboard</a>
+    </div>
+
+    <section class="card mb-6">
+        <div class="card-header"><h4>Report Period</h4><span class="badge badge-info" th:text="${startDate + ' to ' + endDate}">period</span></div>
+        <div class="card-body">
+            <form method="get" th:action="@{/admin/reports}" class="report-filter-form">
+                <div class="form-group"><label class="form-label" for="startDate">From</label><input class="form-input" id="startDate" type="date" name="startDate" th:value="${startDate}" required></div>
+                <div class="form-group"><label class="form-label" for="endDate">To</label><input class="form-input" id="endDate" type="date" name="endDate" th:value="${endDate}" required></div>
+                <div class="form-group report-filter-action"><button class="btn btn-primary" type="submit">Generate Report</button></div>
+            </form>
+            <div class="qa-buttons mt-3">
+                <a class="btn btn-secondary btn-sm" th:href="@{/admin/reports/export/operations(startDate=${startDate},endDate=${endDate})}">Download Operations CSV</a>
+                <a class="btn btn-secondary btn-sm" th:href="@{/admin/reports/export/financial(startDate=${startDate},endDate=${endDate})}">Download Financial CSV</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="stat-grid mb-6">
+        <div class="stat-card metric-card"><p class="stat-label">Reservations</p><h3 class="metric-value" th:text="${reservationCount}">0</h3><p class="stat-desc"><span th:text="${completedReservations}">0</span> completed · <span th:text="${cancelledReservations}">0</span> cancelled.</p></div>
+        <div class="stat-card metric-card"><p class="stat-label">Parking Sessions</p><h3 class="metric-value" th:text="${sessionCount}">0</h3><p class="stat-desc"><span th:text="${overstayedSessions}">0</span> currently/recorded as overstayed.</p></div>
+        <div class="stat-card metric-card"><p class="stat-label">Average Stay</p><h3 class="metric-value" th:text="${#numbers.formatDecimal(averageStayHours, 1, 1) + 'h'}">0h</h3><p class="stat-desc">Completed parking sessions in this period.</p></div>
+        <div class="stat-card metric-card"><p class="stat-label">Gross Collected</p><h3 class="metric-value currency" th:text="${'LKR ' + #numbers.formatDecimal(grossCollected, 1, 2)}">0</h3><p class="stat-desc">Paid transactions including later-refunded payments.</p></div>
+        <div class="stat-card metric-card"><p class="stat-label">Approved Refunds</p><h3 class="metric-value currency" th:text="${'LKR ' + #numbers.formatDecimal(refundsApproved, 1, 2)}">0</h3><p class="stat-desc"><span th:text="${pendingRefunds}">0</span> pending refund request(s).</p></div>
+        <div class="stat-card metric-card"><p class="stat-label">Net Revenue</p><h3 class="metric-value currency" th:text="${'LKR ' + #numbers.formatDecimal(netRevenue, 1, 2)}">0</h3><p class="stat-desc">Gross collection minus approved refunds.</p></div>
+        <div class="stat-card metric-card"><p class="stat-label">Outstanding Bills</p><h3 class="metric-value currency" th:text="${'LKR ' + #numbers.formatDecimal(unpaidAmount, 1, 2)}">0</h3><p class="stat-desc"><span th:text="${voidedBills}">0</span> voided bill(s) in the report period.</p></div>
+        <div class="stat-card metric-card"><p class="stat-label">Customer Feedback</p><h3 class="metric-value" th:text="${#numbers.formatDecimal(averageRating, 1, 1) + '/5'}">0/5</h3><p class="stat-desc"><span th:text="${feedbackCount}">0</span> feedback record(s) in this period.</p></div>
+    </section>
+
+    <section class="analytics-grid mb-6">
+        <div class="card">
+            <div class="card-header"><h4>Reservation Trend</h4><span class="badge badge-neutral">Selected period</span></div>
+            <div class="card-body">
+                <div class="bar-chart">
+                    <div class="bar-item" th:each="point : ${reservationTrend}">
+                        <div class="bar-track"><div class="bar-fill" th:style="'width:' + ${point.percent} + '%'" ></div></div>
+                        <span class="bar-label" th:text="${point.label}">Date</span><strong class="bar-value" th:text="${point.value}">0</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header"><h4>Most Reserved Slots</h4><span class="badge badge-neutral">Top 5</span></div>
+            <div class="card-body no-padding">
+                <div class="table-wrapper analytics-table-wrap">
+                    <table class="table"><thead><tr><th>Slot</th><th class="text-right">Reservations</th></tr></thead><tbody>
+                    <tr th:each="slot : ${topSlots}"><td><strong th:text="${slot.slot}">A-01</strong></td><td class="text-right" th:text="${slot.count}">0</td></tr>
+                    <tr th:if="${#lists.isEmpty(topSlots)}"><td colspan="2" class="cell-muted">No reservation activity for this period.</td></tr>
+                    </tbody></table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="card mb-6">
+        <div class="card-header"><h4>Reservation Status Breakdown</h4><span class="badge badge-info" th:text="${reservationCount + ' total'}">0 total</span></div>
+        <div class="card-body report-status-grid">
+            <div><span class="badge badge-info">ACTIVE</span><strong th:text="${activeReservations}">0</strong></div>
+            <div><span class="badge badge-success">COMPLETED</span><strong th:text="${completedReservations}">0</strong></div>
+            <div><span class="badge badge-danger">CANCELLED</span><strong th:text="${cancelledReservations}">0</strong></div>
+        </div>
+    </section>
+
+    <div class="alert alert-success">Reports are generated on demand and are not stored as duplicate report records. Change the date range at any time to create a fresh view from the current database.</div>
+</main>
+</body>
+</html>

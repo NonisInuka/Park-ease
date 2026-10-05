@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>My Reservations</title></head>
+<body>
+<main>
+    <div class="page-header">
+        <h3>My Reservations</h3>
+        <a th:href="@{/user/reservations/book}" class="btn btn-primary">Book Slot</a>
+    </div>
+
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+    <div class="card filter-card">
+        <div class="card-body">
+            <form method="get" th:action="@{/user/reservations}" class="search-filter-form compact-filter-form">
+                <div class="form-group">
+                    <label class="form-label">Search</label>
+                    <input class="form-input" name="q" th:value="${q}" placeholder="Reservation ID, vehicle, slot, date" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="status">
+                        <option value="">All Statuses</option>
+                        <option value="ACTIVE" th:selected="${statusFilter == 'ACTIVE'}">Active</option>
+                        <option value="COMPLETED" th:selected="${statusFilter == 'COMPLETED'}">Completed</option>
+                        <option value="CANCELLED" th:selected="${statusFilter == 'CANCELLED'}">Cancelled</option>
+                    </select>
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <a th:href="@{/user/reservations}" class="btn btn-secondary">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div th:if="${reservations == null or reservations.isEmpty()}" class="empty-state">
+        <div class="empty-state-icon">&#128197;</div>
+        <p>You have no reservations yet.</p>
+        <a th:href="@{/user/reservations/book}" class="btn btn-primary">Book Your First Slot</a>
+    </div>
+
+    <div class="feedback-grid">
+        <article th:each="res : ${reservations}" class="feedback-card">
+            <div class="fb-header">
+                <span class="font-mono text-sm" th:text="'#' + ${res.reservationId}"></span>
+                <span class="badge"
+                      th:classappend="${res.status == 'ACTIVE'} ? 'badge-success' : (${res.status == 'COMPLETED'} ? 'badge-info' : (${res.status == 'CANCELLED'} ? 'badge-danger' : 'badge-neutral'))"
+                      th:text="${res.status}"></span>
+            </div>
+            <div class="fb-meta">
+                <span th:text="${res.reservationDate}"></span>
+                <span class="text-muted"> &bull; </span>
+                <span th:text="${res.startTime}"></span>
+            </div>
+            <div class="fb-message">
+                <div class="flex gap-4 mb-2">
+                    <span><span class="text-muted">Slot:</span> <strong th:text="${res.slotNumber}"></strong></span>
+                    <span><span class="text-muted">Vehicle:</span> <strong class="font-mono" th:text="${res.vehiclePlate}"></strong></span>
+                </div>
+                <div class="flex gap-4">
+                    <span><span class="text-muted">Duration:</span> <strong th:text="${res.durationHours} + 'h'"></strong></span>
+                </div>
+            </div>
+            <div class="fb-actions" th:if="${res.status == 'ACTIVE' and !checkedInReservationIds.contains(res.reservationId)}">
+                <a th:href="@{/user/reservations/edit/{id}(id=${res.reservationId})}" class="btn btn-ghost btn-xs">Edit</a>
+                <form th:action="@{/user/reservations/cancel/{id}(id=${res.reservationId})}" method="post" class="delete-form">
+                    <button type="submit" class="btn btn-danger btn-xs">Cancel</button>
+                </form>
+            </div>
+            <div class="fb-actions" th:if="${res.status == 'ACTIVE' and checkedInReservationIds.contains(res.reservationId)}">
+                <span class="badge badge-info">CHECKED IN - edit/cancel locked</span>
+            </div>
+        </article>
+    </div>
+</main>
+</body>
+</html>

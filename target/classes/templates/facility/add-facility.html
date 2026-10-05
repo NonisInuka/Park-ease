@@ -1,0 +1,29 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>Add Facility</title></head>
+<body><main>
+    <div class="card max-w-2xl mx-auto">
+        <div class="card-header"><h4>Add Parking Facility</h4></div>
+        <div class="card-body">
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+            <form th:action="@{/admin/facilities/add}" method="post">
+                <div class="form-group">
+                    <label class="form-label">Facility Name</label>
+                    <input class="form-input" name="name" required maxlength="120" placeholder="e.g. City Center Parking" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <input class="form-input" name="address" required maxlength="255" placeholder="Facility address" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" name="description" maxlength="500" rows="4" placeholder="Optional facility details"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Create Facility</button>
+                    <a th:href="@{/admin/facilities}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</main></body></html>
