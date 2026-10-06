@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>Operations Dashboard</title></head>
+<body>
+<main>
+    <div class="page-header">
+        <div>
+            <h3>Operations Overview</h3>
+            <p>Live parking, reservation and financial metrics from SQL Server.</p>
+        </div>
+        <a th:href="@{/admin/reports}" class="btn btn-primary btn-sm">Open Reports</a>
+    </div>
+
+    <section class="stat-grid mb-6">
+        <a th:href="@{/admin/reports}" class="stat-card metric-card">
+            <p class="stat-label">Physical Occupancy</p>
+            <h3 class="metric-value" th:text="${occupancyRate + '%'}">0%</h3>
+            <p class="stat-desc"><strong th:text="${occupiedSlots}">0</strong> occupied of <span th:text="${totalSlots}">0</span> total slots.</p>
+        </a>
+        <a th:href="@{/admin/reports}" class="stat-card metric-card">
+            <p class="stat-label">Available Spaces</p>
+            <h3 class="metric-value" th:text="${availableSlots}">0</h3>
+            <p class="stat-desc"><span th:text="${maintenanceSlots}">0</span> space(s) under maintenance.</p>
+        </a>
+        <a th:href="@{/admin/reservations}" class="stat-card metric-card">
+            <p class="stat-label">Active Reservations</p>
+            <h3 class="metric-value" th:text="${activeReservations}">0</h3>
+            <p class="stat-desc"><span th:text="${completedReservations}">0</span> completed · <span th:text="${cancelledReservations}">0</span> cancelled.</p>
+        </a>
+        <a th:if="${session.loggedUser.stakeholderRole == 'ADMINISTRATOR' or session.loggedUser.stakeholderRole == 'OPERATIONS_MANAGER'}"
+           th:href="@{/operations/sessions}" class="stat-card metric-card">
+            <p class="stat-label">Live Parking Sessions</p>
+            <h3 class="metric-value" th:text="${activeSessions + overstayedSessions}">0</h3>
+            <p class="stat-desc"><span th:text="${overstayedSessions}">0</span> currently overstayed.</p>
+        </a>
+        <a th:if="${session.loggedUser.stakeholderRole == 'ADMINISTRATOR' or session.loggedUser.stakeholderRole == 'OPERATIONS_MANAGER' or session.loggedUser.stakeholderRole == 'FACILITY_OWNER'}" th:href="@{/admin/facilities}" class="stat-card metric-card">
+            <p class="stat-label">Facilities</p>
+            <h3 class="metric-value" th:text="${totalFacilities}">0</h3>
+            <p class="stat-desc">Parking locations managed by this system.</p>
+        </a>
+        <a th:if="${session.loggedUser.stakeholderRole == 'ADMINISTRATOR'}"
+           th:href="@{/admin/users}" class="stat-card metric-card">
+            <p class="stat-label">Active Accounts</p>
+            <h3 class="metric-value" th:text="${activeUsers}">0</h3>
+            <p class="stat-desc"><span th:text="${totalUsers}">0</span> total registered accounts.</p>
+        </a>
+        <div th:unless="${session.loggedUser.stakeholderRole == 'ADMINISTRATOR'}" class="stat-card metric-card">
+            <p class="stat-label">Active Accounts</p>
+            <h3 class="metric-value" th:text="${activeUsers}">0</h3>
+            <p class="stat-desc"><span th:text="${totalUsers}">0</span> total registered accounts.</p>
+        </div>
+        <a th:if="${session.loggedUser.stakeholderRole == 'ADMINISTRATOR' or session.loggedUser.stakeholderRole == 'OPERATIONS_MANAGER' or session.loggedUser.stakeholderRole == 'FINANCE_OFFICER' or session.loggedUser.stakeholderRole == 'FACILITY_OWNER'}"
+           th:href="@{/admin/reports}" class="stat-card metric-card">
+            <p class="stat-label">Net Paid Revenue</p>
+            <h3 class="metric-value currency" th:text="${'LKR ' + #numbers.formatDecimal(paidRevenue, 1, 2)}">LKR 0.00</h3>
+            <p class="stat-desc">Current paid transactions excluding refunded bills.</p>
+        </a>
+        <a th:if="${session.loggedUser.stakeholderRole == 'ADMINISTRATOR' or session.loggedUser.stakeholderRole == 'OPERATIONS_MANAGER' or session.loggedUser.stakeholderRole == 'FINANCE_OFFICER'}"
+           th:href="@{/admin/refunds}" class="stat-card metric-card">
+            <p class="stat-label">Pending Refunds</p>
+            <h3 class="metric-value" th:text="${pendingRefunds}">0</h3>
+            <p class="stat-desc">Refund requests awaiting a finance decision.</p>
+        </a>
+    </section>
+
+    <section class="analytics-grid mb-6">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h4>Reservations — Last 7 Days</h4>
+                    <p class="card-subtitle">Number of reservations by booking date.</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bar-chart">
+                    <div class="bar-item" th:each="point : ${reservationTrend}">
+                        <div class="bar-track"><div class="bar-fill" th:style="'width:' + ${point.percent} + '%'" ></div></div>
+                        <span class="bar-label" th:text="${point.label}">Date</span>
+                        <strong class="bar-value" th:text="${point.value}">0</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h4>Paid Revenue — Last 6 Months</h4>
+                    <p class="card-subtitle">Successfully paid, non-refunded bills.</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bar-chart">
+                    <div class="bar-item" th:each="point : ${revenueTrend}">
+                        <div class="bar-track revenue"><div class="bar-fill revenue" th:style="'width:' + ${point.percent} + '%'" ></div></div>
+                        <span class="bar-label" th:text="${point.label}">Month</span>
+                        <strong class="bar-value" th:text="${'LKR ' + point.display}">LKR 0</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="card mb-6">
+        <div class="card-header">
+            <div>
+                <h4>Facility Utilization</h4>
+                <p class="card-subtitle">Current physical parking-space status by facility.</p>
+            </div>
+            <span class="badge badge-info" th:text="${#numbers.formatDecimal(averageRating, 1, 1) + ' / 5 avg. feedback'}">0 / 5</span>
+        </div>
+        <div class="card-body no-padding">
+            <div class="table-wrapper analytics-table-wrap">
+                <table class="table">
+                    <thead><tr><th>Facility</th><th>Status</th><th>Total</th><th>Available</th><th>Occupied</th><th>Maintenance</th><th>Occupancy</th></tr></thead>
+                    <tbody>
+                    <tr th:each="facility : ${facilityStats}">
+                        <td><strong th:text="${facility.name}">Facility</strong></td>
+                        <td><span class="badge" th:classappend="${facility.status == 'ACTIVE'} ? ' badge-success' : ' badge-neutral'" th:text="${facility.status}">ACTIVE</span></td>
+                        <td th:text="${facility.total}">0</td>
+                        <td th:text="${facility.available}">0</td>
+                        <td th:text="${facility.occupied}">0</td>
+                        <td th:text="${facility.maintenance}">0</td>
+                        <td><strong th:text="${facility.occupancyRate + '%'}">0%</strong></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(facilityStats)}"><td colspan="7" class="cell-muted">No facilities available yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="analytics-grid mb-6">
+        <div class="card">
+            <div class="card-header"><h4>Recent Reservations</h4><a th:href="@{/admin/reservations}" class="btn btn-ghost btn-xs">View all</a></div>
+            <div class="card-body no-padding">
+                <div class="table-wrapper analytics-table-wrap">
+                    <table class="table compact-table">
+                        <thead><tr><th>Date</th><th>Vehicle</th><th>Slot</th><th>Status</th></tr></thead>
+                        <tbody>
+                        <tr th:each="res : ${recentReservations}">
+                            <td><span th:text="${res.reservationDate}">date</span><br><small class="cell-muted" th:text="${res.startTime}">time</small></td>
+                            <td class="cell-mono" th:text="${res.vehiclePlate}">plate</td>
+                            <td th:text="${res.slotNumber}">slot</td>
+                            <td><span class="badge" th:classappend="${res.status == 'ACTIVE'} ? ' badge-info' : (${res.status == 'COMPLETED'} ? ' badge-success' : ' badge-danger')" th:text="${res.status}">status</span></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(recentReservations)}"><td colspan="4" class="cell-muted">No reservations yet.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h4>Recent Payments</h4><a th:href="@{/admin/reports}" class="btn btn-ghost btn-xs">Financial report</a></div>
+            <div class="card-body no-padding">
+                <div class="table-wrapper analytics-table-wrap">
+                    <table class="table compact-table">
+                        <thead><tr><th>Reference</th><th>Vehicle</th><th>Amount</th><th>Status</th></tr></thead>
+                        <tbody>
+                        <tr th:each="bill : ${recentPayments}">
+                            <td class="cell-mono" th:text="${bill.paymentReference}">PAY</td>
+                            <td th:text="${bill.vehiclePlate}">plate</td>
+                            <td th:text="${'LKR ' + #numbers.formatDecimal(bill.finalAmount, 1, 2)}">0</td>
+                            <td><span class="badge badge-success" th:text="${bill.status}">PAID</span></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(recentPayments)}"><td colspan="4" class="cell-muted">No completed payments yet.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="quick-actions">
+        <h4>Quick Actions</h4>
+        <div class="qa-buttons">
+            <a th:href="@{/admin/reports}" class="btn btn-primary btn-sm">Generate Reports</a>
+            <a th:href="@{/admin/reservations}" class="btn btn-secondary btn-sm">Reservations</a>
+            <a th:if="${session.loggedUser.stakeholderRole == 'ADMINISTRATOR' or session.loggedUser.stakeholderRole == 'OPERATIONS_MANAGER'}" th:href="@{/operations/sessions}" class="btn btn-secondary btn-sm">Parking Operations</a>
+            <a th:href="@{/admin/feedbacks}" class="btn btn-secondary btn-sm">Feedback</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

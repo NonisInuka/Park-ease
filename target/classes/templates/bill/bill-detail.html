@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>Bill Details</title></head>
+<body><main class="max-w-3xl mx-auto">
+    <div class="page-header"><h3>Bill / Invoice Details</h3></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <dl class="detail-grid cols-2">
+        <div class="detail-item"><dt>Bill ID</dt><dd class="mono" th:text="${bill.billId}"></dd></div>
+        <div class="detail-item"><dt>Status</dt><dd><span class="badge badge-info" th:text="${bill.status}"></span></dd></div>
+        <div class="detail-item"><dt>Reservation</dt><dd class="mono" th:text="${bill.reservationId}"></dd></div>
+        <div class="detail-item"><dt>Parking Session</dt><dd class="mono" th:text="${bill.sessionId != null ? bill.sessionId : '-'}"></dd></div>
+        <div class="detail-item"><dt>Vehicle</dt><dd th:text="${bill.vehiclePlate}"></dd></div>
+        <div class="detail-item"><dt>Slot</dt><dd th:text="${bill.slotNumber}"></dd></div>
+        <div class="detail-item"><dt>Billable Hours</dt><dd th:text="${bill.durationHours} + ' h'"></dd></div>
+        <div class="detail-item"><dt>Rate / Hour</dt><dd th:text="'LKR ' + ${#numbers.formatDecimal(bill.ratePerHour,0,'COMMA',2,'POINT')}"></dd></div>
+        <div class="detail-item"><dt>Subtotal</dt><dd th:text="'LKR ' + ${#numbers.formatDecimal(bill.totalAmount,0,'COMMA',2,'POINT')}"></dd></div>
+        <div class="detail-item"><dt>Discount</dt><dd th:text="'LKR ' + ${#numbers.formatDecimal(bill.discount,0,'COMMA',2,'POINT')}"></dd></div>
+        <div class="detail-item" style="grid-column:1/-1"><dt>Final Amount</dt><dd class="large text-primary" th:text="'LKR ' + ${#numbers.formatDecimal(bill.finalAmount,0,'COMMA',2,'POINT')}"></dd></div>
+        <div class="detail-item" th:if="${bill.paymentReference != null}"><dt>Payment Reference</dt><dd class="mono" th:text="${bill.paymentReference}"></dd></div>
+        <div class="detail-item" th:if="${bill.paidAt != null}"><dt>Paid At</dt><dd th:text="${bill.paidAt}"></dd></div>
+    </dl>
+    <div th:if="${refund != null}" class="alert mt-4" th:classappend="${refund.status == 'REJECTED'} ? 'alert-error' : 'alert-success'">
+        Refund request: <strong th:text="${refund.status}"></strong>
+    </div>
+    <div class="flex gap-2 mt-5">
+        <a th:if="${bill.status == 'UNPAID'}" th:href="@{/user/bills/pay/{id}(id=${bill.billId})}" class="btn btn-success">Pay Now</a>
+        <a th:if="${bill.status == 'PAID' or bill.status == 'REFUNDED'}" th:href="@{/user/bills/{id}/receipt(id=${bill.billId})}" class="btn btn-primary">View Receipt</a>
+        <a th:if="${bill.status == 'PAID' and (refund == null or refund.status == 'REJECTED')}" th:href="@{/user/refunds/request/{id}(id=${bill.billId})}" class="btn btn-secondary">Request Refund</a>
+        <a th:href="@{/user/bills}" class="btn btn-ghost">Back</a>
+    </div>
+</main></body></html>

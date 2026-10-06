@@ -1,0 +1,106 @@
+<!doctype html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout/base :: layout(~{::title}, ~{::main})}"
+>
+  <head>
+    <title>Edit Vehicle</title>
+  </head>
+  <body>
+    <main>
+      <div class="card max-w-2xl mx-auto">
+        <div class="card-header">
+          <h4>Edit Vehicle</h4>
+        </div>
+        <div class="card-body">
+          <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+          <form
+            th:action="${adminEdit} ? @{/admin/vehicles/update} : @{/user/vehicles/update}"
+            method="post"
+          >
+            <input
+              type="hidden"
+              name="vehicleId"
+              th:value="${vehicle.vehicleId}"
+            />
+            <div class="form-grid cols-2">
+              <div class="form-group">
+                <label class="form-label">Plate Number</label>
+                <input
+                  type="text"
+                  name="plateNumber"
+                  th:value="${vehicle.plateNumber}"
+                  required
+                  class="form-input"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Vehicle Category</label>
+                <select name="type" required class="form-select">
+                  <option th:each="category : ${vehicleCategories.entrySet()}"
+                          th:value="${category.key}"
+                          th:text="${category.value}"
+                          th:selected="${vehicle.type == category.key}">Vehicle Category</option>
+                </select>
+                <p class="form-hint">Choose the category that best matches this vehicle.</p>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Make</label>
+                <input
+                  type="text"
+                  name="make"
+                  th:value="${vehicle.make}"
+                  required
+                  class="form-input"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Model</label>
+                <input
+                  type="text"
+                  name="model"
+                  th:value="${vehicle.model}"
+                  required
+                  class="form-input"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Color</label>
+                <input
+                  type="text"
+                  name="color"
+                  th:value="${vehicle.color}"
+                  required
+                  class="form-input"
+                />
+              </div>
+              <div class="form-group w-full" style="grid-column: 1 / -1">
+                <label class="form-label">Vehicle Image URL (optional)</label>
+                <input
+                  type="text"
+                  name="vehicleUrl"
+                  th:value="${vehicle.vehicleUrl}"
+                  placeholder="https://..."
+                  class="form-input"
+                />
+                <p class="form-hint">
+                  Provide a public image URL for your vehicle (optional).
+                </p>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">
+                Update Vehicle
+              </button>
+              <a
+                th:href="${adminEdit} ? @{/admin/vehicles} : @{/user/vehicles}"
+                class="btn btn-secondary"
+                >Cancel</a
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>User Dashboard</title></head>
+<body>
+<main>
+    <div class="page-header">
+        <div>
+            <h3>My Parking Overview</h3>
+            <p>Your reservations, vehicles, sessions and payment summary.</p>
+        </div>
+        <a th:href="@{/user/reservations/book}" class="btn btn-primary btn-sm">Book a Slot</a>
+    </div>
+
+    <section class="stat-grid mb-6">
+        <a th:href="@{/user/reservations}" class="stat-card metric-card">
+            <p class="stat-label">Active Reservations</p>
+            <h3 class="metric-value" th:text="${activeReservations}">0</h3>
+            <p class="stat-desc"><span th:text="${completedReservations}">0</span> completed · <span th:text="${cancelledReservations}">0</span> cancelled.</p>
+        </a>
+        <a th:href="@{/user/vehicles}" class="stat-card metric-card">
+            <p class="stat-label">Registered Vehicles</p>
+            <h3 class="metric-value" th:text="${vehicleCount}">0</h3>
+            <p class="stat-desc">Vehicles available for parking reservations.</p>
+        </a>
+        <a th:href="@{/user/sessions}" class="stat-card metric-card">
+            <p class="stat-label">Current Parking Sessions</p>
+            <h3 class="metric-value" th:text="${activeSessions}">0</h3>
+            <p class="stat-desc">Vehicles currently checked in or overstayed.</p>
+        </a>
+        <a th:href="@{/user/bills}" class="stat-card metric-card">
+            <p class="stat-label">Unpaid Bills</p>
+            <h3 class="metric-value" th:text="${unpaidBills}">0</h3>
+            <p class="stat-desc" th:text="${'LKR ' + #numbers.formatDecimal(unpaidAmount, 1, 2) + ' currently due'}">LKR 0.00 due</p>
+        </a>
+        <a th:href="@{/user/bills}" class="stat-card metric-card">
+            <p class="stat-label">Total Paid</p>
+            <h3 class="metric-value currency" th:text="${'LKR ' + #numbers.formatDecimal(paidTotal, 1, 2)}">LKR 0.00</h3>
+            <p class="stat-desc">Successful non-refunded payments.</p>
+        </a>
+        <a th:href="@{/user/refunds}" class="stat-card metric-card">
+            <p class="stat-label">Pending Refunds</p>
+            <h3 class="metric-value" th:text="${pendingRefunds}">0</h3>
+            <p class="stat-desc" th:text="${'LKR ' + #numbers.formatDecimal(refundedTotal, 1, 2) + ' refunded historically'}">LKR 0.00</p>
+        </a>
+    </section>
+
+    <section class="card mb-6" th:if="${nextReservation != null}">
+        <div class="card-header"><h4>Next Reservation</h4><span class="badge badge-info">UPCOMING</span></div>
+        <div class="card-body">
+            <div class="detail-grid cols-2">
+                <div class="detail-item"><dt>Date &amp; Time</dt><dd th:text="${nextReservation.reservationDate + ' at ' + nextReservation.startTime}">date</dd></div>
+                <div class="detail-item"><dt>Duration</dt><dd th:text="${nextReservation.durationHours + ' hour(s)'}">0</dd></div>
+                <div class="detail-item"><dt>Vehicle</dt><dd class="mono" th:text="${nextReservation.vehiclePlate}">plate</dd></div>
+                <div class="detail-item"><dt>Parking Slot</dt><dd th:text="${nextReservation.slotNumber}">slot</dd></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="card mb-6">
+        <div class="card-header"><h4>Recent Reservations</h4><a th:href="@{/user/reservations}" class="btn btn-ghost btn-xs">View all</a></div>
+        <div class="card-body no-padding">
+            <div class="table-wrapper analytics-table-wrap">
+                <table class="table">
+                    <thead><tr><th>Date</th><th>Vehicle</th><th>Slot</th><th>Duration</th><th>Status</th></tr></thead>
+                    <tbody>
+                    <tr th:each="res : ${recentReservations}">
+                        <td><span th:text="${res.reservationDate}">date</span> <span class="cell-muted" th:text="${res.startTime}">time</span></td>
+                        <td class="cell-mono" th:text="${res.vehiclePlate}">plate</td>
+                        <td th:text="${res.slotNumber}">slot</td>
+                        <td th:text="${res.durationHours + 'h'}">0h</td>
+                        <td><span class="badge" th:classappend="${res.status == 'ACTIVE'} ? ' badge-info' : (${res.status == 'COMPLETED'} ? ' badge-success' : ' badge-danger')" th:text="${res.status}">status</span></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(recentReservations)}"><td colspan="5" class="cell-muted">No reservation history yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="quick-actions">
+        <h4>Quick Actions</h4>
+        <div class="qa-buttons">
+            <a th:href="@{/user/slots}" class="btn btn-primary btn-sm">Browse Slots</a>
+            <a th:href="@{/user/reservations/book}" class="btn btn-secondary btn-sm">Book Now</a>
+            <a th:href="@{/user/bills}" class="btn btn-secondary btn-sm">My Bills</a>
+            <a th:if="${session.loggedUser.stakeholderRole == 'PARKING_STAFF'}" th:href="@{/operations/sessions}" class="btn btn-secondary btn-sm">Parking Operations</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>My Parking Sessions</title></head>
+<body>
+<main>
+    <div class="page-header">
+        <h3>My Parking Sessions</h3>
+    </div>
+
+    <div th:if="${sessions == null or sessions.isEmpty()}" class="empty-state">
+        <div class="empty-state-icon">&#128663;</div>
+        <p>You have no parking session history yet. This appears once your vehicle is checked in at the facility.</p>
+    </div>
+
+    <div class="feedback-grid">
+        <article th:each="s : ${sessions}" class="feedback-card">
+            <div class="fb-header">
+                <span class="font-mono text-sm" th:text="'#' + ${s.sessionId}"></span>
+                <span class="badge"
+                      th:classappend="${s.status == 'ACTIVE'} ? 'badge-success' : (${s.status == 'OVERSTAYED'} ? 'badge-danger' : 'badge-info')"
+                      th:text="${s.status}"></span>
+            </div>
+            <div class="fb-message">
+                <div class="flex gap-4 mb-2">
+                    <span><span class="text-muted">Slot:</span> <strong th:text="${s.slotNumber}"></strong></span>
+                    <span><span class="text-muted">Vehicle:</span> <strong class="font-mono" th:text="${s.vehiclePlate}"></strong></span>
+                </div>
+                <div class="flex gap-4 mb-2">
+                    <span><span class="text-muted">Checked in:</span> <strong th:text="${s.checkInTime}"></strong></span>
+                </div>
+                <div class="flex gap-4" th:if="${s.status == 'COMPLETED'}">
+                    <span><span class="text-muted">Checked out:</span> <strong th:text="${s.checkOutTime}"></strong></span>
+                </div>
+                <div class="flex gap-4" th:unless="${s.status == 'COMPLETED'}">
+                    <span><span class="text-muted">Expected end:</span> <strong th:text="${s.expectedEndTime}"></strong></span>
+                </div>
+            </div>
+        </article>
+    </div>
+</main>
+</body>
+</html>

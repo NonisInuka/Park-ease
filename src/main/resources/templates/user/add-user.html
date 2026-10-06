@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>Add User</title></head>
+<body>
+<main>
+    <div class="card max-w-md mx-auto">
+        <div class="card-header">
+            <h4>Add New User</h4>
+        </div>
+        <div class="card-body">
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+            <form th:action="@{/admin/users/add}" method="post">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="name" required class="form-input" placeholder="John Doe" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" required class="form-input" placeholder="john@example.com" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" required minlength="6" class="form-input" placeholder="Minimum 6 characters" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone</label>
+                    <input type="text" name="phone" required pattern="[0-9]{10,15}" title="10 to 15 digits, numbers only (e.g. 0771234567)" class="form-input" placeholder="0771234567" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select name="role" required class="form-select">
+                        <optgroup label="Driver / Operational Staff">
+                            <option th:each="r : ${userTierRoles}" th:value="${r}" th:text="${r}">DRIVER</option>
+                        </optgroup>
+                        <optgroup label="Administrative">
+                            <option th:each="r : ${adminTierRoles}" th:value="${r}" th:text="${r}">ADMINISTRATOR</option>
+                        </optgroup>
+                    </select>
+                    <p class="form-hint">Driver / Parking Staff accounts use License Number below; Administrative accounts use Admin Code.</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">License Number</label>
+                    <input type="text" name="licenseNumber" class="form-input" placeholder="B1234567" />
+                    <p class="form-hint">License Number (for regular users)</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Admin Code</label>
+                    <input type="text" name="adminCode" class="form-input" placeholder="ADM-XXXX" />
+                    <p class="form-hint">Admin Code (for admins only)</p>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create User</button>
+                    <a th:href="@{/admin/users}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

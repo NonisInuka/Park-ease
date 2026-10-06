@@ -1,0 +1,312 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content)">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title
+            th:text="${#strings.trim(#strings.replace(#strings.replace(#strings.replace(#strings.replace(title, '&lt;title&gt;', ''), '&lt;/title&gt;', ''), '<title>', ''), '</title>', ''))} + ' | ParkEase'"
+        >
+            ParkEase
+        </title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <script th:src="@{/js/theme.js}"></script>
+        <link rel="stylesheet" th:href="@{/css/main.css}" />
+        <script src="https://unpkg.com/lucide@latest"></script>
+    </head>
+    <body>
+        <div class="shell">
+            <aside class="sidebar">
+                <div class="sidebar-brand">
+                    <p class="brand-label">Smart Parking System</p>
+                    <h1 class="brand-name">ParkEase</h1>
+                </div>
+
+                <nav class="sidebar-nav">
+                    <th:block
+                        th:if="${session.loggedUser != null and session.loggedUser.role == 'ADMIN'}"
+                    >
+                        <p class="sidebar-section-label">Main Menu</p>
+                        <a th:href="@{/admin/dashboard}" class="sidebar-link"
+                            ><i data-lucide="layout-dashboard"></i
+                            ><span>Dashboard</span></a
+                        >
+                        <a th:if="${session.loggedUser.stakeholderRole == 'ADMINISTRATOR'}"
+                           th:href="@{/admin/users}" class="sidebar-link"
+                            ><i data-lucide="users"></i><span>Users</span></a
+                        >
+                        <a th:href="@{/admin/vehicles}" class="sidebar-link"
+                            ><i data-lucide="car"></i><span>Vehicles</span></a
+                        >
+                        <th:block th:if="${session.loggedUser.stakeholderRole == 'ADMINISTRATOR' or session.loggedUser.stakeholderRole == 'OPERATIONS_MANAGER' or session.loggedUser.stakeholderRole == 'FACILITY_OWNER'}">
+                            <a th:href="@{/admin/facilities}" class="sidebar-link"
+                                ><i data-lucide="building-2"></i
+                                ><span>Facilities</span></a
+                            >
+                            <a th:href="@{/admin/zones}" class="sidebar-link"
+                                ><i data-lucide="map"></i
+                                ><span>Parking Zones</span></a
+                            >
+                            <a th:href="@{/admin/slots}" class="sidebar-link"
+                                ><i data-lucide="parking-square"></i
+                                ><span>Parking Slots</span></a
+                            >
+                        </th:block>
+                        <a th:href="@{/admin/reservations}" class="sidebar-link"
+                            ><i data-lucide="calendar-days"></i
+                            ><span>Reservations</span></a
+                        >
+                        <a th:if="${session.loggedUser.stakeholderRole == 'ADMINISTRATOR' or session.loggedUser.stakeholderRole == 'OPERATIONS_MANAGER'}"
+                           th:href="@{/operations/sessions}" class="sidebar-link"
+                            ><i data-lucide="timer"></i
+                            ><span>Parking Operations</span></a
+                        >
+                        <a th:href="@{/admin/reports}" class="sidebar-link"
+                            ><i data-lucide="chart-no-axes-combined"></i
+                            ><span>Reports &amp; Analytics</span></a
+                        >
+                        <p class="sidebar-section-label">
+                            Finance &amp; Support
+                        </p>
+                        <th:block th:if="${session.loggedUser.stakeholderRole == 'ADMINISTRATOR' or session.loggedUser.stakeholderRole == 'OPERATIONS_MANAGER' or session.loggedUser.stakeholderRole == 'FINANCE_OFFICER'}">
+                            <a th:href="@{/admin/bills}" class="sidebar-link"
+                                ><i data-lucide="receipt-text"></i
+                                ><span>Bills &amp; Payments</span></a
+                            >
+                            <a th:href="@{/admin/refunds}" class="sidebar-link"
+                                ><i data-lucide="rotate-ccw"></i
+                                ><span>Refund Requests</span></a
+                            >
+                        </th:block>
+                        <a th:href="@{/admin/feedbacks}" class="sidebar-link"
+                            ><i data-lucide="messages-square"></i
+                            ><span>Feedback</span></a
+                        >
+                        <a th:href="@{/admin/support}" class="sidebar-link"
+                            ><i data-lucide="life-buoy"></i
+                            ><span>Support Tickets</span></a
+                        >
+                    </th:block>
+
+                    <th:block
+                        th:if="${session.loggedUser != null and session.loggedUser.role == 'USER'}"
+                    >
+                        <p class="sidebar-section-label">Main Menu</p>
+                        <a th:href="@{/user/dashboard}" class="sidebar-link"
+                            ><i data-lucide="layout-dashboard"></i
+                            ><span>Dashboard</span></a
+                        >
+                        <a th:href="@{/user/profile}" class="sidebar-link"
+                            ><i data-lucide="user-circle-2"></i
+                            ><span>My Profile</span></a
+                        >
+                        <a th:href="@{/user/vehicles}" class="sidebar-link"
+                            ><i data-lucide="car"></i
+                            ><span>My Vehicles</span></a
+                        >
+                        <a th:href="@{/user/slots}" class="sidebar-link"
+                            ><i data-lucide="map-pinned"></i
+                            ><span>Available Slots</span></a
+                        >
+                        <a th:href="@{/user/reservations}" class="sidebar-link"
+                            ><i data-lucide="calendar-days"></i
+                            ><span>My Reservations</span></a
+                        >
+                        <a th:if="${session.loggedUser.stakeholderRole == 'PARKING_STAFF'}"
+                           th:href="@{/operations/sessions}" class="sidebar-link"
+                            ><i data-lucide="clipboard-check"></i
+                            ><span>Parking Operations</span></a
+                        >
+                        <a th:href="@{/user/sessions}" class="sidebar-link"
+                            ><i data-lucide="timer"></i
+                            ><span>My Sessions</span></a
+                        >
+                        <p class="sidebar-section-label">
+                            Payments &amp; Support
+                        </p>
+                        <a th:href="@{/user/bills}" class="sidebar-link"
+                            ><i data-lucide="wallet-cards"></i
+                            ><span>My Bills</span></a
+                        >
+                        <a th:href="@{/user/refunds}" class="sidebar-link"
+                            ><i data-lucide="rotate-ccw"></i
+                            ><span>My Refunds</span></a
+                        >
+                        <a th:href="@{/user/feedbacks}" class="sidebar-link"
+                            ><i data-lucide="messages-square"></i
+                            ><span>Feedback</span></a
+                        >
+                        <a th:href="@{/user/support}" class="sidebar-link"
+                            ><i data-lucide="life-buoy"></i
+                            ><span>Support</span></a
+                        >
+                    </th:block>
+
+                    <th:block th:if="${session.loggedUser != null}">
+                        <p class="sidebar-section-label">Updates</p>
+                        <a th:href="@{/notifications}" class="sidebar-link">
+                            <i data-lucide="bell"></i><span>Notifications</span>
+                            <span th:if="${unreadNotificationCount != null and unreadNotificationCount > 0}"
+                                  class="nav-count" th:text="${unreadNotificationCount}">0</span>
+                        </a>
+                    </th:block>
+                </nav>
+
+                <div class="sidebar-footer">
+                    <a th:href="@{/logout}" class="sidebar-logout">
+                        <i data-lucide="log-out"></i><span>Sign Out</span>
+                    </a>
+                </div>
+            </aside>
+
+            <div class="main-area">
+                <header class="topbar">
+                    <div class="topbar-left">
+                        <h2
+                            th:text="${#strings.trim(#strings.replace(#strings.replace(#strings.replace(#strings.replace(title, '&lt;title&gt;', ''), '&lt;/title&gt;', ''), '<title>', ''), '</title>', ''))}"
+                        >
+                            Dashboard
+                        </h2>
+                        <p>ParkEase Operations Center</p>
+                    </div>
+                    <div class="topbar-right">
+                        <button
+                            type="button"
+                            class="theme-toggle"
+                            data-theme-toggle
+                            aria-label="Switch theme"
+                            aria-pressed="false"
+                        >
+                            <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☾</span>
+                            <span class="theme-toggle-label" data-theme-label>Dark</span>
+                        </button>
+                        <div
+                            class="user-badge"
+                            th:if="${session.loggedUser != null}"
+                        >
+                            <span
+                                class="user-name"
+                                th:text="${session.loggedUser.name}"
+                                >User</span
+                            >
+                            <span class="user-sep">&bull;</span>
+                            <span
+                                class="user-role"
+                                th:text="${session.loggedUser.stakeholderRole != null ? session.loggedUser.stakeholderRole : session.loggedUser.role}"
+                                >ROLE</span
+                            >
+                        </div>
+                    </div>
+                </header>
+
+                <main class="content">
+                    <th:block th:replace="${content}" />
+                </main>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div id="confirm-modal" class="modal-overlay hidden">
+            <div class="modal-dialog">
+                <div class="modal-icon danger">&#x26A0;</div>
+                <h3>Confirm Deletion</h3>
+                <p id="confirm-message">
+                    Are you sure you want to delete this item? This action
+                    cannot be undone.
+                </p>
+                <div class="modal-actions">
+                    <button id="confirm-cancel" class="btn btn-secondary">
+                        Cancel
+                    </button>
+                    <button
+                        id="confirm-yes"
+                        class="btn btn-danger"
+                        style="
+                            background: #ef4444;
+                            color: #fff;
+                            border-color: #ef4444;
+                        "
+                    >
+                        Yes, Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            (function () {
+                var path = window.location.pathname;
+                document
+                    .querySelectorAll(".sidebar-link")
+                    .forEach(function (link) {
+                        var href = link.getAttribute("href");
+                        if (!href) return;
+                        if (
+                            path === href ||
+                            (path.startsWith(href) && href !== "/")
+                        ) {
+                            link.classList.add("active");
+                        }
+                    });
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            })();
+
+            // Delete confirmation modal logic
+            (function () {
+                var modal = document.getElementById("confirm-modal");
+                var cancelBtn = document.getElementById("confirm-cancel");
+                var confirmBtn = document.getElementById("confirm-yes");
+                var pendingForm = null;
+
+                // Intercept all delete forms
+                document
+                    .querySelectorAll(".delete-form")
+                    .forEach(function (form) {
+                        form.addEventListener("submit", function (e) {
+                            e.preventDefault();
+                            pendingForm = form;
+                            modal.classList.remove("hidden");
+                        });
+                    });
+
+                // Cancel button hides modal
+                cancelBtn.addEventListener("click", function () {
+                    modal.classList.add("hidden");
+                    pendingForm = null;
+                });
+
+                // Click outside modal to cancel
+                modal.addEventListener("click", function (e) {
+                    if (e.target === modal) {
+                        modal.classList.add("hidden");
+                        pendingForm = null;
+                    }
+                });
+
+                // Confirm button submits the form
+                confirmBtn.addEventListener("click", function () {
+                    if (pendingForm) {
+                        pendingForm.submit();
+                    }
+                });
+
+                // Escape key to cancel
+                document.addEventListener("keydown", function (e) {
+                    if (
+                        e.key === "Escape" &&
+                        !modal.classList.contains("hidden")
+                    ) {
+                        modal.classList.add("hidden");
+                        pendingForm = null;
+                    }
+                });
+            })();
+        </script>
+    </body>
+</html>

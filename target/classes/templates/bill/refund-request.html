@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>Request Refund</title></head>
+<body><main class="max-w-3xl mx-auto">
+    <div class="page-header"><h3>Request Refund</h3></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div class="card"><div class="card-body">
+        <p class="mb-3"><strong>Bill:</strong> <span class="font-mono" th:text="${bill.billId}"></span></p>
+        <p class="mb-4"><strong>Refund amount:</strong> <span th:text="'LKR ' + ${#numbers.formatDecimal(bill.finalAmount,0,'COMMA',2,'POINT')}"></span></p>
+        <form th:action="@{/user/refunds/request/{id}(id=${bill.billId})}" method="post">
+            <div class="form-group"><label class="form-label" for="reason">Reason</label>
+                <textarea id="reason" name="reason" required minlength="10" maxlength="500" rows="5" class="form-input" placeholder="Explain why you are requesting a refund"></textarea>
+                <p class="form-hint">10-500 characters. Approval is subject to finance review.</p>
+            </div>
+            <div class="form-actions"><button type="submit" class="btn btn-primary">Submit Refund Request</button><a th:href="@{/user/bills}" class="btn btn-secondary">Cancel</a></div>
+        </form>
+    </div></div>
+</main></body></html>

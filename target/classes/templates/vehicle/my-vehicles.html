@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>My Vehicles</title></head>
+<body>
+<main>
+    <div class="page-header">
+        <h3>My Vehicles <span th:if="${!vehicles.isEmpty()}" class="text-muted text-sm font-mono" th:text="'(' + ${vehicles.size()} + ')'"></span></h3>
+        <a th:href="@{/user/vehicles/add}" class="btn btn-primary">Add Vehicle</a>
+    </div>
+
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+    <div th:if="${vehicles.isEmpty()}" class="empty-state">
+        <div class="empty-state-icon">&#x1F697;</div>
+        <p>No vehicles registered yet.</p>
+        <a th:href="@{/user/vehicles/add}" class="btn btn-primary mt-3">Add Your First Vehicle</a>
+    </div>
+
+    <div th:if="${!vehicles.isEmpty()}" class="vehicle-grid">
+        <article th:each="vehicle : ${vehicles}" class="vehicle-card">
+            <div class="vc-image">
+                <img th:if="${vehicle.vehicleUrl != null and !vehicle.vehicleUrl.isEmpty()}" th:src="${vehicle.vehicleUrl}" alt="Vehicle" />
+                <div th:if="${vehicle.vehicleUrl == null or vehicle.vehicleUrl.isEmpty()}" class="vc-no-image">No Image</div>
+            </div>
+            <div class="vc-body">
+                <div class="flex items-center justify-between">
+                    <p class="vc-plate" th:text="${vehicle.plateNumber}">PLATE</p>
+                    <span class="badge badge-info" th:text="${vehicleCategoryLabels[vehicle.type] != null ? vehicleCategoryLabels[vehicle.type] : vehicle.type}">TYPE</span>
+                </div>
+                <p class="vc-model" th:text="${vehicle.make} + ' ' + ${vehicle.model}">Make Model</p>
+                <p class="vc-meta">Color: <span th:text="${vehicle.color}">—</span></p>
+                <div class="vc-actions">
+                    <a th:href="@{/user/vehicles/edit/{id}(id=${vehicle.vehicleId})}" class="btn btn-ghost btn-sm">Edit</a>
+                    <form th:action="@{/user/vehicles/delete/{id}(id=${vehicle.vehicleId})}" method="post" class="delete-form">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </article>
+    </div>
+</main>
+</body>
+</html>

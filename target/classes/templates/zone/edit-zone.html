@@ -1,0 +1,19 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head><title>Edit Zone</title></head>
+<body><main>
+<div class="card max-w-2xl mx-auto"><div class="card-header"><h4>Edit Parking Zone</h4></div><div class="card-body">
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <form th:action="@{/admin/zones/update}" method="post">
+        <input type="hidden" name="zoneId" th:value="${zone.zoneId}" />
+        <div class="form-grid cols-2">
+            <div class="form-group"><label class="form-label">Facility</label><select class="form-select" name="facilityId" required><option th:each="f : ${facilities}" th:value="${f.facilityId}" th:text="${f.name}" th:selected="${zone.facilityId == f.facilityId}">Facility</option></select></div>
+            <div class="form-group"><label class="form-label">Status</label><select class="form-select" name="status" required><option value="ACTIVE" th:selected="${zone.status == 'ACTIVE'}">ACTIVE</option><option value="MAINTENANCE" th:selected="${zone.status == 'MAINTENANCE'}">MAINTENANCE</option></select></div>
+            <div class="form-group"><label class="form-label">Zone Name</label><input class="form-input" name="name" th:value="${zone.name}" required maxlength="100" /></div>
+            <div class="form-group"><label class="form-label">Floor / Location</label><input class="form-input" name="floor" th:value="${zone.floor}" required maxlength="60" /></div>
+        </div>
+        <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" name="description" maxlength="300" rows="3" th:text="${zone.description}"></textarea></div>
+        <div class="form-actions"><button class="btn btn-primary" type="submit">Update Zone</button><a th:href="@{/admin/zones}" class="btn btn-secondary">Cancel</a></div>
+    </form>
+</div></div>
+</main></body></html>
